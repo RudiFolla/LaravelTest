@@ -26,11 +26,18 @@ use App\Http\Controllers\Api\CustomerController;
 // });
 
 
-Route::apiResource('/users',UserController::class);
+// Route::apiResource('/users',UserController::class);
 Route::post('/auth/login',[AuthController::class,'logIn']);
+Route::post('/users',[UserController::class,'store']);
 
 Route::group(['middleware'=>['auth:sanctum']], function(){
     Route::post('/auth/logout',[AuthController::class, 'logOut']);
+
+    Route::get('/users',[UserController::class,'index']);
+    Route::get('/users/{user}',[UserController::class,'show']);
+    Route::put('/users/{user}',[UserController::class,'update']);
+    
+
 
     Route::put('/tasks/assign/{task}',[TaskController::class, 'assingTaskToDeveloper']);
     Route::put('/tasks/update/state/{task}',[TaskController::class, 'updateTaskState']);

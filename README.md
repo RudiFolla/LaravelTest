@@ -1,7 +1,12 @@
 
 ## About this project
 
-After cloning this project you will need to run this command:
+After cloning this project you will need to run this command to install all the packages:
+
+         composer install
+then rename the file **.env.example** and modify the fields about the database and the smtp with the ones that you have
+
+after that you will nedd to create all the tables of the database with this command:
 
          php artisan migrate:fresh --seed
 
@@ -16,11 +21,14 @@ Api routes:
 
 - without authentication:
   - POST auth/login (parameters: email, password) will create a token for the authentication used in the apis
-  - GET api/users will return all the users in the database
-  - GET api/users/{user} will return the user with that id
+  
   - POST api/users will create a user and return his api token
-  - PUT api/users/{user} will update the selected user
+  
 - with authentication:
+  - Users:
+    - GET api/users will return all the users in the database
+    - GET api/users/{user} will return the user with that id 
+    - PUT api/users/{user} will update the selected user
   - Customers:
     - GET api/customers will return all the customers in the database
     - GET api/customers/{customer} will return the customer with that id
@@ -38,3 +46,5 @@ Api routes:
     - PUT api/tasks/{task} will update the selected task
     - PUT api/tasks/assign/{task} will check if the user assigned is a developer and will send an email to notify the assignment
     - PUT api/tasks/update/state/{task} will update the state of the task and if the task is done will send an email to the project manager assigned to the project
+  - Auth:
+    - POST auth/logout will delete all the tokens of the user stored on the database

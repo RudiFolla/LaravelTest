@@ -46,8 +46,12 @@ class UserController extends Controller
      */
     public function update(UpdateUserRequest $request, User $user)
     {
-        $user->update($request->validated());
-        return UserResource::make($user);
+        if($request->user()->role == UserRoleEnum::PM || $request->user()->id == $user->id)
+        {
+            $user->update($request->validated());
+            return UserResource::make($user);
+        } else
+            return response('You don\'t have the permission for this action',400);
 
     }
 
