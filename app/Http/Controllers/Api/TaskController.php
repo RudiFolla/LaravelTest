@@ -53,7 +53,7 @@ class TaskController extends Controller
      */
     public function update(UpdateTaskRequest $request, Task $task)
     {
-        if(true/*$request->user()->hasPermissionTo('update task')*/)
+        if($request->user()->hasPermissionTo('update task'))
         {
             $task->update($request->validated());
             return TaskResource::make($task); 
@@ -66,25 +66,23 @@ class TaskController extends Controller
         {
             if($request->state == TaskStateEnum::DONE->value)
             {
-                //logica per inviare le email 
+                $project = Project::all()->find($task->project_id);
+                $pm = User::all()->find($project->pm_id);
+                $devName = $request->user()->name;
+                $taskTitle = $task->title;
+                $mail_data=[
+                    'fromEmail'=>$request->user()->email,
+                    'fromName'=>$request->user()->name,
+                    'recipient'=>$pm->email,
+                    'subject'=>'Task Assignment',
+                    'body'=>"The task:\n $taskTitle, from project $project->name has been done by $devName"
+                ];
+                Mail::send('email-template',$mail_data, function($message) use ($mail_data){
+                    $message->to($mail_data['recipient'])
+                            ->from($mail_data['fromEmail'],$mail_data['fromName'])
+                            ->subject($mail_data['subject']);
+                });
             }
-            $project = Project::all()->find($task->project_id);
-            $pm = User::all()->find($project->pm_id);
-            $devName = $request->user()->name;
-            $taskTitle = $task->title;
-            //logica per inviare email di assegnazione
-            $mail_data=[
-                'fromEmail'=>$request->user()->email,
-                'fromName'=>$request->user()->name,
-                'recipient'=>$pm->email,
-                'subject'=>'Task Assignment',
-                'body'=>"The task:\n $taskTitle, from project $project->name has been done by $devName"
-            ];
-            Mail::send('email-template',$mail_data, function($message) use ($mail_data){
-                $message->to($mail_data['recipient'])
-                        ->from($mail_data['fromEmail'],$mail_data['fromName'])
-                        ->subject($mail_data['subject']);
-            });
             $task->update($request->validated());
             return TaskResource::make($task);
         }
@@ -101,7 +99,6 @@ class TaskController extends Controller
                 return response('Developer not found',404);
             $pmName = $request->user()->name;
             $taskTitle = $task->title;
-            //logica per inviare email di assegnazione
             $mail_data=[
                 'fromEmail'=>$request->user()->email,
                 'fromName'=>$request->user()->name,

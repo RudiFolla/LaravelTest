@@ -18,14 +18,14 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        User::create([
+        $pm = User::create([
             'id' => 1,
             'name' => 'Project Manager 1',
             'email' => 'project.manager@example.com',
             'role' => 'ProjectManager',
             'password'=>'projectmanager'
         ]);
-        User::create([
+        $dev = User::create([
             'id' => 2,
             'name' => 'Developer 1',
             'email' => 'developer@example.com',
@@ -50,5 +50,8 @@ class DatabaseSeeder extends Seeder
         $this->call([
             RoleSeeder::class
         ]);
+        $dev->assignRole('dev');
+        $pm->assignRole('pm');
+
     }
 }
